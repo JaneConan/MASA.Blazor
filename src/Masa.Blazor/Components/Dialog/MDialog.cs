@@ -21,13 +21,13 @@ namespace Masa.Blazor
         public string ContentClass { get; set; }
 
         [Parameter]
-        public string Origin { get; set; }
+        public string Origin { get; set; } = "center center";
 
         [Parameter]
         public bool Scrollable { get; set; }
 
         [Parameter]
-        public string Transition { get; set; }
+        public string Transition { get; set; } = "dialog-transition";
 
         public Dictionary<string, object> ContentAttrs
         {
@@ -37,21 +37,13 @@ namespace Masa.Blazor
                 {
                     { "role", "document" }
                 };
-                if (Value)
+                if (IsActive)
                 {
                     attrs.Add("tabindex", 0);
                 }
 
                 return attrs;
             }
-        }
-
-        public override async Task SetParametersAsync(ParameterView parameters)
-        {
-            await base.SetParametersAsync(parameters);
-
-            Origin ??= "center center";
-            Transition ??= "dialog-transition";
         }
 
         protected override void SetComponentClass()
@@ -69,7 +61,7 @@ namespace Masa.Blazor
                 {
                     cssBuilder
                         .Add($"{prefix}__content")
-                        .AddIf($"{prefix}__content--active", () => Value)
+                        .AddIf($"{prefix}__content--active", () => IsActive)
                         .AddTheme(IsDark);
                 }, styleBuilder =>
                 {
@@ -81,7 +73,7 @@ namespace Masa.Blazor
                     cssBuilder
                         .Add(prefix)
                         .Add(ContentClass)
-                        .AddIf($"{prefix}--active", () => Value)
+                        .AddIf($"{prefix}--active", () => IsActive)
                         .AddIf($"{prefix}--persistent", () => Persistent)
                         .AddIf($"{prefix}--fullscreen", () => Fullscreen)
                         .AddIf($"{prefix}--scrollable", () => Scrollable)
@@ -97,7 +89,7 @@ namespace Masa.Blazor
             AbstractProvider
                 .Apply<BOverlay, MOverlay>(attrs =>
                 {
-                    attrs[nameof(MOverlay.Value)] = ShowOverlay && Value;
+                    attrs[nameof(MOverlay.Value)] = ShowOverlay && IsActive;
                     attrs[nameof(MOverlay.ZIndex)] = ZIndex - 1;
                 })
                 .ApplyDialogDefault();
@@ -126,11 +118,11 @@ namespace Masa.Blazor
         {
             if (args.Key == "Escape")
             {
-                await Close();
+                await CloseAsync();
             }
         }
 
-        protected override async Task Close()
+        protected override async Task CloseAsync()
         {
             if (Persistent)
             {
@@ -138,7 +130,7 @@ namespace Masa.Blazor
                 return;
             }
 
-            await base.Close();
+            await base.CloseAsync();
         }
 
         private bool CloseConditional()
@@ -159,23 +151,23 @@ namespace Masa.Blazor
                 return;
             }
 
-            await UpdateValue(false);
+            await SetIsActiveAsync(false);
 
             await InvokeStateHasChangedAsync();
         }
 
         protected override async Task ShowLazyContent()
         {
-            if (!ShowContent && Value)
+            if (!ShowContent && IsActive)
             {
                 ShowContent = true;
-                Value = false;
+                IsActive = false;
 
                 await InvokeStateHasChangedAsync();
                 await Task.Delay(BROWSER_RENDER_INTERVAL);
 
                 await AfterShowContent();
-                Value = true;
+                IsActive = true;
 
                 await MoveContentTo();
                 await InvokeStateHasChangedAsync();
