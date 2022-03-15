@@ -54,7 +54,7 @@ namespace Masa.Blazor
                         .Add($"left:{CalculatedLeft}px")
                         .Add($"top:{CalculatedTop}px")
                         .Add($"opacity:{(IsActive ? 0.9 : 0)}")
-                        .Add($"z-index:{StackMinZIndex}")//TODO:
+                        .Add($"z-index:{ComputedZIndex}")
                         .AddBackgroundColor(Color);
                 });
 

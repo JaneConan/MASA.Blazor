@@ -43,8 +43,8 @@ namespace Masa.Blazor
                         .AddIf($"max-height:{CalculatedMaxHeight}", () => CalculatedMaxHeight != null)
                         .AddIf($"min-width:{CalculatedMinWidth}", () => CalculatedMinWidth != null)
                         .AddIf($"max-width:{CalculatedMaxWidth}", () => CalculatedMaxWidth != null)
-                        .Add($"top:{CalculatedTop}")
-                        .Add($"left:{CalculatedLeft}")
+                        .AddIf($"top:{CalculatedTop.ToUnit()}", () => CalculatedTop != null)
+                        .AddIf($"left:{CalculatedLeft.ToUnit()}", () => CalculatedLeft != null)
                         .Add($"transform-origin:{Origin}")
                         .Add($"z-index:{ComputedZIndex}")
                         .Add(ContentStyle);
