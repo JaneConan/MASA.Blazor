@@ -167,9 +167,9 @@ namespace Masa.Blazor
 
         protected DateOnly? MaxYear => Max != null ? new DateOnly(Max.Value.Year, 1, 1) : null;
 
-        public (Func<DateOnly, string> Year, Func<IList<DateOnly>, string> TitleDate) Formatters => (YearFormat ?? DateFormatters.Year(Locale), TitleDateFormat ?? DefaultTitleDateFormatter);
+        protected (Func<DateOnly, string> Year, Func<IList<DateOnly>, string> TitleDate) Formatters => (YearFormat ?? DateFormatters.Year(Locale), TitleDateFormat ?? DefaultTitleDateFormatter);
 
-        public Func<IList<DateOnly>, string> DefaultTitleDateFormatter
+        protected Func<IList<DateOnly>, string> DefaultTitleDateFormatter
         {
             get
             {
