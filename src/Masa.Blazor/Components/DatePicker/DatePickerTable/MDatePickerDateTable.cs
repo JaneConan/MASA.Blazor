@@ -25,7 +25,7 @@ namespace Masa.Blazor
         [Parameter]
         public EventCallback<int> OnDaySelected { get; set; }
 
-        public override Func<DateOnly, string> Formatter
+        protected override Func<DateOnly, string> Formatter
         {
             get
             {
@@ -38,7 +38,7 @@ namespace Masa.Blazor
             }
         }
 
-        public Func<DateOnly, string> WeekdayFormatter
+        protected Func<DateOnly, string> WeekdayFormatter
         {
             get
             {
@@ -51,7 +51,7 @@ namespace Masa.Blazor
             }
         }
 
-        public IEnumerable<string> WeekDays
+        protected IEnumerable<string> WeekDays
         {
             get
             {
@@ -62,7 +62,7 @@ namespace Masa.Blazor
             }
         }
 
-        public int WeekDaysBeforeFirstDayOfTheMonth
+        protected int WeekDaysBeforeFirstDayOfTheMonth
         {
             get
             {
@@ -73,10 +73,13 @@ namespace Masa.Blazor
             }
         }
 
-        public int GetWeekNumber(int dayInMonth)
-        {
-            return 0;
-        }
+        IEnumerable<string> IDatePickerDateTable.WeekDays => WeekDays;
+
+        int IDatePickerDateTable.DisplayedMonth => DisplayedMonth;
+
+        int IDatePickerDateTable.WeekDaysBeforeFirstDayOfTheMonth => WeekDaysBeforeFirstDayOfTheMonth;
+
+        int IDatePickerDateTable.GetWeekNumber(int dayInMonth) => GetWeekNumber(dayInMonth);
 
         protected override void SetComponentClass()
         {
@@ -97,6 +100,11 @@ namespace Masa.Blazor
 
             AbstractProvider
                 .ApplyDatePickerDateTableDefault();
+        }
+
+        protected int GetWeekNumber(int dayInMonth)
+        {
+            return 0;
         }
     }
 }
