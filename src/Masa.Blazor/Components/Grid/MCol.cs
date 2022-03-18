@@ -108,7 +108,7 @@ namespace Masa.Blazor
                             ("align-self-end", AlignTypes.End),
                             ("align-self-baseline", AlignTypes.Baseline),
                             ("align-self-stretch", AlignTypes.Stretch)), () => Align != null)
-                        .AddIf(FlexStyle, () => Flex != null);
+                        .AddIf(() => FlexStyle, () => Flex != null);
                 });
         }
     }
