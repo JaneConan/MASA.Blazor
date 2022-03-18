@@ -119,6 +119,11 @@
       "Description": "应用到组件最外层元素的style"
     },
     {
+      "Name": "TableDate",
+      "Type": "DateOnly",
+      "Description": ""
+    },
+    {
       "Name": "Value",
       "Type": "TValue",
       "Default": "null",
