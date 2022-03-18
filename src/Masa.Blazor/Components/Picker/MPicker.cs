@@ -33,8 +33,6 @@ namespace Masa.Blazor
         [Parameter]
         public string HeaderColor { get; set; }
 
-        
-
         public string ComputedTitleColor
         {
             get
