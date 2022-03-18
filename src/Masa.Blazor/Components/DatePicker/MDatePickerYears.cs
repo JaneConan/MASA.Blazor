@@ -31,7 +31,7 @@ namespace Masa.Blazor
         [Parameter]
         public string Locale { get; set; }
 
-        public Func<DateOnly, string> Formatter
+        protected Func<DateOnly, string> Formatter
         {
             get
             {
@@ -44,13 +44,9 @@ namespace Masa.Blazor
             }
         }
 
-        public async Task HandleOnYearItemClickAsync(int year)
-        {
-            if (OnInput.HasDelegate)
-            {
-                await OnInput.InvokeAsync(year);
-            }
-        }
+        Func<DateOnly, string> IDatePickerYears.Formatter => Formatter;
+
+        Task IDatePickerYears.HandleOnYearItemClickAsync(int year) => HandleOnYearItemClickAsync(year);
 
         protected override void SetComponentClass()
         {
@@ -87,5 +83,12 @@ namespace Masa.Blazor
             }
         }
 
+        protected async Task HandleOnYearItemClickAsync(int year)
+        {
+            if (OnInput.HasDelegate)
+            {
+                await OnInput.InvokeAsync(year);
+            }
+        }
     }
 }
