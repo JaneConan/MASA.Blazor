@@ -50,77 +50,7 @@ namespace Masa.Blazor
         [Parameter]
         public string Locale { get; set; }
 
-        [Inject]
-        public MasaBlazor MasaBlazor { get; set; }
-
-        public int DisplayedMonth => TableDate.Month - 1;
-
-        public int DisplayedYear => TableDate.Year;
-
-        public virtual Func<DateOnly, string> Formatter { get; }
-
-        protected bool IsReversing { get; set; }
-
-        public Dictionary<string, object> GetButtonAttrs(DateOnly value) => new()
-        {
-            { "type", "button" },
-            { "disabled", Disabled || !IsDateAllowed(value, Min, Max, AllowedDates) },
-            { "onclick", CreateEventCallback<MouseEventArgs>(args => HandleOnClickAsync(value)) }
-        };
-
-        private async Task HandleOnClickAsync(DateOnly value)
-        {
-            if (Disabled)
-            {
-                return;
-            }
-
-            if (IsDateAllowed(value, Min, Max, AllowedDates) && !Readonly)
-            {
-                if (OnInput.HasDelegate)
-                {
-                    await OnInput.InvokeAsync(value);
-                }
-            }
-        }
-
-        private bool IsDateAllowed(DateOnly date, DateOnly? min, DateOnly? max, Func<DateOnly, bool> allowedFunc)
-        {
-            return (allowedFunc == null || allowedFunc(date)) && (min == null || date >= min) && (max == null || date <= max);
-        }
-
-        protected virtual bool IsSelected(DateOnly value)
-        {
-            if (Value is DateOnly date)
-            {
-                return date == value;
-            }
-            else if (Value is IList<DateOnly> dates)
-            {
-                if (Range && dates.Count == 2)
-                {
-                    return dates.Min() <= value && value <= dates.Max();
-                }
-
-                return dates.Contains(value);
-            }
-
-            return false;
-        }
-
-        protected virtual bool IsCurrent(DateOnly value)
-        {
-            return value == Current;
-        }
-
-        protected override string ComputedTransition
-        {
-            get
-            {
-                return IsReversing == !MasaBlazor.RTL ? "tab-reverse-transition" : "tab-transition";
-            }
-        }
-
+        [Parameter]
         public override DateOnly TableDate
         {
             get
@@ -132,6 +62,38 @@ namespace Masa.Blazor
                 SetValue(value);
             }
         }
+
+        [Inject]
+        public MasaBlazor MasaBlazor { get; set; }
+
+        protected int DisplayedMonth => TableDate.Month - 1;
+
+        protected int DisplayedYear => TableDate.Year;
+
+        protected virtual Func<DateOnly, string> Formatter { get; }
+
+        protected bool IsReversing { get; set; }
+
+        protected Dictionary<string, object> GetButtonAttrs(DateOnly value) => new()
+        {
+            { "type", "button" },
+            { "disabled", Disabled || !IsDateAllowed(value, Min, Max, AllowedDates) },
+            { "onclick", CreateEventCallback<MouseEventArgs>(args => HandleOnClickAsync(value)) }
+        };
+
+        protected override string ComputedTransition
+        {
+            get
+            {
+                return IsReversing == !MasaBlazor.RTL ? "tab-reverse-transition" : "tab-transition";
+            }
+        }
+
+        int IDatePickerTable.DisplayedYear => DisplayedYear;
+
+        Func<DateOnly, string> IDatePickerTable.Formatter => Formatter;
+
+        Dictionary<string, object> IDatePickerTable.GetButtonAttrs(DateOnly value) => GetButtonAttrs(value);
 
         protected override void OnInitialized()
         {
@@ -213,6 +175,51 @@ namespace Masa.Blazor
 
             AbstractProvider
                 .ApplyDatePickerTableDefault();
+        }
+
+        private async Task HandleOnClickAsync(DateOnly value)
+        {
+            if (Disabled)
+            {
+                return;
+            }
+
+            if (IsDateAllowed(value, Min, Max, AllowedDates) && !Readonly)
+            {
+                if (OnInput.HasDelegate)
+                {
+                    await OnInput.InvokeAsync(value);
+                }
+            }
+        }
+
+        private bool IsDateAllowed(DateOnly date, DateOnly? min, DateOnly? max, Func<DateOnly, bool> allowedFunc)
+        {
+            return (allowedFunc == null || allowedFunc(date)) && (min == null || date >= min) && (max == null || date <= max);
+        }
+
+        protected virtual bool IsSelected(DateOnly value)
+        {
+            if (Value is DateOnly date)
+            {
+                return date == value;
+            }
+            else if (Value is IList<DateOnly> dates)
+            {
+                if (Range && dates.Count == 2)
+                {
+                    return dates.Min() <= value && value <= dates.Max();
+                }
+
+                return dates.Contains(value);
+            }
+
+            return false;
+        }
+
+        protected virtual bool IsCurrent(DateOnly value)
+        {
+            return value == Current;
         }
     }
 }
