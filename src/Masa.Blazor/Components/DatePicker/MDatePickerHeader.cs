@@ -63,35 +63,34 @@ namespace Masa.Blazor
         [Parameter]
         public string Locale { get; set; }
 
-        
-
         [Inject]
         public MasaBlazor MasaBlazor { get; set; }
 
-        public bool RTL => MasaBlazor.RTL;
+        protected bool RTL => MasaBlazor.RTL;
 
         protected bool IsReversing { get; set; }
 
-        public string Transition => IsReversing == !MasaBlazor.RTL ? "tab-reverse-transition" : "tab-transition";
+        protected string Transition => IsReversing == !MasaBlazor.RTL ? "tab-reverse-transition" : "tab-transition";
 
-        public Dictionary<string, object> ButtonAttrs => new()
+        protected Dictionary<string, object> ButtonAttrs
         {
-            { "type", "button" },
+            get
             {
-                "onclick",
-                CreateEventCallback<MouseEventArgs>(HandleOnClickAsync)
-            }
-        };
+                var attrs = new Dictionary<string, object>()
+                {
+                    { "type", "button" }
+                };
 
-        private async Task HandleOnClickAsync(MouseEventArgs args)
-        {
-            if (OnToggle.HasDelegate)
-            {
-                await OnToggle.InvokeAsync();
+                if (OnToggle.HasDelegate)
+                {
+                    attrs.Add("onclick", CreateEventCallback<MouseEventArgs>(HandleOnClickAsync));
+                }
+
+                return attrs;
             }
         }
 
-        public Func<DateOnly, string> Formatter
+        protected Func<DateOnly, string> Formatter
         {
             get
             {
@@ -104,6 +103,13 @@ namespace Masa.Blazor
             }
         }
 
+        bool IDatePickerHeader.RTL => RTL;
+
+        string IDatePickerHeader.Transition => Transition;
+
+        Dictionary<string, object> IDatePickerHeader.ButtonAttrs => ButtonAttrs;
+
+        Func<DateOnly, string> IDatePickerHeader.Formatter => Formatter;
 
         public DateOnly CalculateChange(int sign)
         {
@@ -174,16 +180,21 @@ namespace Masa.Blazor
                     attrs[nameof(MButton.Icon)] = true;
                     attrs[nameof(MButton.Light)] = Light;
 
-                    attrs[nameof(MButton.StopPropagation)] = true;
-                    attrs[nameof(MButton.OnClick)] = CreateEventCallback<MouseEventArgs>(async args =>
+                    if (OnInput.HasDelegate)
                     {
-                        if (OnInput.HasDelegate)
+                        attrs[nameof(MButton.StopPropagation)] = true;
+                        attrs[nameof(MButton.OnClick)] = CreateEventCallback<MouseEventArgs>(async args =>
                         {
                             await OnInput.InvokeAsync(calculateChange);
-                        }
-                    });
+                        });
+                    }
                 })
                 .Apply<BIcon, MIcon>();
+        }
+
+        private async Task HandleOnClickAsync(MouseEventArgs args)
+        {
+            await OnToggle.InvokeAsync();
         }
     }
 }
