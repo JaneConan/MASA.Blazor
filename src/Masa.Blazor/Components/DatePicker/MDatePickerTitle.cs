@@ -45,7 +45,7 @@ namespace Masa.Blazor
         [Parameter]
         public string Date { get; set; }
 
-        public string ComputedTransition
+        protected string ComputedTransition
         {
             get
             {
@@ -55,33 +55,11 @@ namespace Masa.Blazor
 
         protected bool IsReversing { get; set; }
 
-        public async Task HandleOnYearBtnClickAsync(MouseEventArgs arg)
-        {
-            var active = SelectingYear;
-            if (active)
-            {
-                return;
-            }
+        string IDatePickerTitle.ComputedTransition => ComputedTransition;
 
-            if (OnSelectingYearUpdate.HasDelegate)
-            {
-                await OnSelectingYearUpdate.InvokeAsync(true);
-            }
-        }
+        Task IDatePickerTitle.HandleOnTitleDateBtnClickAsync(MouseEventArgs args) => HandleOnTitleDateBtnClickAsync(args);
 
-        public async Task HandleOnTitleDateBtnClickAsync(MouseEventArgs arg)
-        {
-            var active = !SelectingYear;
-            if (active)
-            {
-                return;
-            }
-
-            if (OnSelectingYearUpdate.HasDelegate)
-            {
-                await OnSelectingYearUpdate.InvokeAsync(false);
-            }
-        }
+        Task IDatePickerTitle.HandleOnYearBtnClickAsync(MouseEventArgs args) => HandleOnYearBtnClickAsync(args);
 
         protected override void OnInitialized()
         {
@@ -124,6 +102,34 @@ namespace Masa.Blazor
                 {
                     attrs[nameof(MIcon.Dark)] = true;
                 });
+        }
+
+        private async Task HandleOnYearBtnClickAsync(MouseEventArgs args)
+        {
+            var active = SelectingYear;
+            if (active)
+            {
+                return;
+            }
+
+            if (OnSelectingYearUpdate.HasDelegate)
+            {
+                await OnSelectingYearUpdate.InvokeAsync(true);
+            }
+        }
+
+        private async Task HandleOnTitleDateBtnClickAsync(MouseEventArgs args)
+        {
+            var active = !SelectingYear;
+            if (active)
+            {
+                return;
+            }
+
+            if (OnSelectingYearUpdate.HasDelegate)
+            {
+                await OnSelectingYearUpdate.InvokeAsync(false);
+            }
         }
     }
 }
