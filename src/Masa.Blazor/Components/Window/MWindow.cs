@@ -31,7 +31,7 @@ namespace Masa.Blazor
             }
         }
 
-        public EventCallback<Element> OnLeave => EventCallback.Factory.Create<Element>(this, HandleOnLeaveAsync);
+        public Func<Element, Task> OnLeave => HandleOnLeaveAsync;
 
         private async Task HandleOnLeaveAsync(Element element)
         {
@@ -41,7 +41,7 @@ namespace Masa.Blazor
             TransitionHeight = await el.GetClientHeightAsync();
         }
 
-        public EventCallback<Element> OnEnterTo => EventCallback.Factory.Create<Element>(this, HandleOnEnterToAsync);
+        public Func<Element, Task> OnEnterTo => HandleOnEnterToAsync;
 
         private async Task HandleOnEnterToAsync(Element element)
         {

@@ -41,12 +41,12 @@ namespace Masa.Blazor
 
         protected override async Task OnLeave(BlazorComponent.Element element)
         {
-            await WindowGroup.OnLeave.InvokeAsync(element);
+            await WindowGroup.OnLeave.Invoke(element);
         }
 
         protected override async Task OnEnterTo(BlazorComponent.Element element)
         {
-            await WindowGroup.OnEnterTo.InvokeAsync(element);
+            await WindowGroup.OnEnterTo.Invoke(element);
         }
 
         protected override void SetComponentClass()
